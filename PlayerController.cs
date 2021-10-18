@@ -4,66 +4,88 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 10.0f; 
+ /// public classes 
+    public float moveSpeed;             // movement peed in units per second
+    public float jumpForce;             // force applied forward 
+    public float lookSensitivity;       // Mouse look Sensitivity 
+    public float maxLookX;              // lowest down we can look 
+    public float minLookX;               // highest up we can look 
+    private float rotX;                 // Current x rotation  of the camera 
 
-    public float turnSpeed = 50.0f;
+    private Camera camera;
+    private Rigidbody rb; 
+    private Weapon weapon;
 
-    public float hInput; 
-    
-    public float vInput;
-
-    public float xRange = 8.72f;
-
-    public float yRange = 4.95f;
-
-    public GameObject MagicMissle; 
-
-    public Transform launcher;
-
-    public Vector3 offset = new Vector3 (0,1,0);
-
+    void Awake()
+    {
+        weapon = GetComponent<Weapon>(); 
+        
+    }
 
     // Start is called before the first frame update
-    
-    // public float health 
-
     void Start()
     {
-        
+        // Get Components 
+        camera =  Camera.main;
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        hInput = Input.GetAxis("Horizontal"); 
-        vInput = Input.GetAxis("Vertical"); 
+        Move();
+        CamLook();
 
-        transform.Rotate(Vector3.back, turnSpeed * hInput * Time.deltaTime);
-        transform.Translate(Vector3.up * speed * vInput * Time.deltaTime);
-
-        // Create a wall on the -x side 
-        if(transform.position.x < -xRange)
+    // Fire Button
+        if(Input.GetButton("Fire1"))
         {
-            transform.position =  new Vector3(-xRange, transform.position.y, transform.position.z);
-        
+            if(weapon.CanShoot())
+              weapon.Shoot();
         }
 
-        // Create a wall on the x side 
 
-         if(transform.position.x > xRange)
-        {
-            transform.position =  new Vector3(xRange, transform.position.y, transform.position.z);
-        }
+        if(Input.GetButtonDown("Jump"))
+           Jump();  
+    }
 
-         if(transform.position.x < -xRange)
-        {
-            transform.position =  new Vector3(-xRange, transform.position.y, transform.position.z);
-        
-        }
+    void Move()
+    {
+        float x = Input.GetAxis("Horizontal") * moveSpeed;
+        float z = Input.GetAxis("Vertical") * moveSpeed;
+
     
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Instantiate(MagicMissle, launcher.transform.position, launcher.transform.rotation); 
-        }
+        /// rb.velocity = new Vector3(x, rb.velocity.y, z)
+        // Move direction relative to camera 
+        Vector3 dir = transform.right * x + transform.forward * z;
+        rb.velocity = dir;
+        //Jump with direction
+        dir.y = rb.velocity.y;
+
+
+    }
+
+    void Jump()
+    {
+
+     Ray ray = new Ray (transform.position, Vector3.down);
+
+     if(Physics.Raycast(ray,1.1f))
+     {
+         // Add Force to jump
+       rb.AddForce (Vector3.up * jumpForce, ForceMode.Impulse);
+     }
+     
+    }
+
+    
+
+    void CamLook()
+    {
+        float y = Input.GetAxis("Mouse X") * lookSensitivity;
+        rotX += Input.GetAxis("Mouse Y") * lookSensitivity;
+
+        rotX = Mathf.Clamp(rotX, minLookX, maxLookX)
+        camera.transform.localRotation = Quaternion.Euler(-rotx,0,0);
+        transform.eulerAngles += Vector3.up * y; 
     }
 }
