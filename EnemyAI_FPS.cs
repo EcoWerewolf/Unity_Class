@@ -31,7 +31,6 @@ public class EnemyAI : MonoBehaviour
         InvokeRepeating("UpdatePath", 0.0f, 0.5f);
 
         curHp = maxHp;
-        
     }
 
     void UpdatePath()
@@ -66,12 +65,14 @@ public class EnemyAI : MonoBehaviour
         if(curHp<= 0);
             Die();
         
-        void Die()
-        {
-            Destroy(gameObject);
-        }
+       
     }
 
+ void Die()
+        {
+            GameManager.instance.AddScore(scoreToGive);
+            Destroy(gameObject);
+        }
 
     void Update()
     {

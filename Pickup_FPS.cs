@@ -17,8 +17,10 @@ public class Pickup : MonoBehaviour
     public float bobSpeed; 
     public float bobHeight; 
     private bool bobbingUp; 
-
     private Vector3 startPos; 
+
+    /// Get audio for the pickup
+    public AudioClip pickupSFX;
 
     // Start is called before the first frame update
     void Start()
@@ -52,7 +54,10 @@ public class Pickup : MonoBehaviour
                 print("Type Not Accepted");
                 break; 
             }
-
+        /// keep audio outside of switch
+        /// Refrence Audio Source on the player to play the pickup sound effect 
+        other.GetComponent<AudioSource>().PlayOneShot(pickupSFX);
+        /// Destroy the pickup 
         Destroy(GameObject); 
 
         }

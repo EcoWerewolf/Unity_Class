@@ -24,6 +24,11 @@ public class Weapon: MonoBehaviour
     private bool isPlayer;
 
 
+    /// Audio Source and Sound
+    public AudioClip shootSFX; 
+    private AudioSource audioSource;
+
+
     void private void Awake() 
     {
         //Disable cursor
@@ -31,6 +36,8 @@ public class Weapon: MonoBehaviour
 
         if(GetComponent<PlayerController>())
             isPlayer = true; 
+
+        audioSource = GetComponent<AudioSource>(); 
         
     }
 
@@ -46,9 +53,10 @@ public class Weapon: MonoBehaviour
         
     }
 
-    public void Shoot() ///Made public because so it is able to be accessed by other scripts
+    public void Shoot() 
+        ///Made public because so it is able to be accessed by other scripts
     { 
-        // Cooldown
+        /// Cooldown
         lastShootTime = Time.time;
         curAmmo --;
         /// Creating an instance of the bullet prefab at muzzles position and rotation
@@ -60,19 +68,12 @@ public class Weapon: MonoBehaviour
         ///add velocity to projectile
         bullet. GetComponent<Rigidbody>().velocity = muzzle.forward * bulletSpeed;
 
+        if(isPlayer)
+        {
+            GameUI.instance.UpdateAmmoText(curAmmo, maxAmmo); 
+        }
 
-    }
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        audioSource.PlayOneShot(shootSFX);
+        /// play the shoot sound effect once 
     }
 }

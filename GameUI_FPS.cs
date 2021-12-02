@@ -68,6 +68,7 @@ public class GameUI : MonoBehaviour
 
     public void OnResumeButton()
     {
+        GameManager.instance.TogglePauseGame();
 
     }
 
@@ -79,13 +80,5 @@ public class GameUI : MonoBehaviour
     public void OnRestartButton()
     {
         SceneManager.LoadScene("Game");
-    }
-
-   
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }
